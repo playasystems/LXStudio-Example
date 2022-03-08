@@ -22,6 +22,8 @@ import java.io.File;
 
 import heronarts.lx.LX;
 import heronarts.lx.LXPlugin;
+import heronarts.lx.model.LXModel;
+import heronarts.lx.model.StripModel;
 import heronarts.lx.studio.LXStudio;
 import processing.core.PApplet;
 
@@ -61,7 +63,9 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     flags.useGLPointCloud = false;
     flags.startMultiThreaded = true;
 
-    new LXStudio(this, flags);
+    LXModel model = new StripModel(25);
+
+    new LXStudio(this, flags, model);
     this.surface.setTitle(WINDOW_TITLE);
     if (!FULLSCREEN && HAS_WINDOW_POSITION) {
       this.surface.setLocation(WINDOW_X, WINDOW_Y);
@@ -79,6 +83,10 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     // Register custom pattern and effect types
     lx.registry.addPattern(heronarts.lx.app.pattern.AppPattern.class);
     lx.registry.addEffect(heronarts.lx.app.effect.AppEffect.class);
+
+    String listenIp = "127.0.0.1";
+    GigglePixelListener gpListener = new GigglePixelListener(lx, listenIp);
+    lx.engine.addLoopTask(gpListener);
   }
 
   public void initializeUI(LXStudio lx, LXStudio.UI ui) {
