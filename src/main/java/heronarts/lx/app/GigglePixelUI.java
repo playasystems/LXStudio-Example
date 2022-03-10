@@ -57,7 +57,5 @@ public class GigglePixelUI extends UICollapsibleSection {
     };
     gpMode.addListener(update);
     update.onParameterChanged(null);
-
-
   }
 }
