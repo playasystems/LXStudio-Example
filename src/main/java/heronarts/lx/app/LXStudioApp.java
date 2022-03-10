@@ -19,6 +19,7 @@
 package heronarts.lx.app;
 
 import java.io.File;
+import java.io.IOException;
 
 import heronarts.lx.LX;
 import heronarts.lx.LXPlugin;
@@ -35,7 +36,7 @@ import processing.core.PApplet;
  */
 public class LXStudioApp extends PApplet implements LXPlugin {
 
-  private static final String WINDOW_TITLE = "LX Studio";
+  private static final String WINDOW_TITLE = "GigglePixel Example";
 
   private static int WIDTH = 1280;
   private static int HEIGHT = 800;
@@ -45,6 +46,9 @@ public class LXStudioApp extends PApplet implements LXPlugin {
   private static int WINDOW_Y = 0;
 
   private static boolean HAS_WINDOW_POSITION = false;
+
+  GigglePixelListener gpListener;
+  GigglePixelBroadcaster gpBroadcaster;
 
   @Override
   public void settings() {
@@ -84,9 +88,26 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     lx.registry.addPattern(heronarts.lx.app.pattern.AppPattern.class);
     lx.registry.addEffect(heronarts.lx.app.effect.AppEffect.class);
 
-    String listenIp = "127.0.0.1";
-    GigglePixelListener gpListener = new GigglePixelListener(lx, listenIp);
-    lx.engine.addLoopTask(gpListener);
+    String myGigglePixelName = "Aztec Spleen";
+    int myGigglePixelID = 0; // Visit https://tinyurl.com/gpsources to be assigned one!
+
+    String listenIp = "0.0.0.0";
+    try {
+      this.gpListener = new GigglePixelListener(lx, listenIp, myGigglePixelID);
+      lx.engine.addLoopTask(this.gpListener);
+      LX.log("GigglePixel listener created");
+    } catch (IOException e) {
+      LX.log("Failed to create GigglePixel listener: " + e.getMessage());
+    }
+
+    try {
+      this.gpBroadcaster = new GigglePixelBroadcaster(
+              lx, "127.0.0.1", myGigglePixelName, myGigglePixelID);
+      lx.engine.addLoopTask(this.gpBroadcaster);
+      LX.log("GigglePixel broadcaster created");
+    } catch (IOException e) {
+      LX.log("Failed to create GigglePixel broadcaster: " + e.getMessage());
+    }
   }
 
   public void initializeUI(LXStudio lx, LXStudio.UI ui) {
@@ -97,7 +118,10 @@ public class LXStudioApp extends PApplet implements LXPlugin {
 
   public void onUIReady(LXStudio lx, LXStudio.UI ui) {
     // At this point, the LX Studio application UI has been built. You may now add
-    // additional views and components to the Ui heirarchy.
+    // additional views and components to the Ui hierarchy.
+    GigglePixelUI gpui = new GigglePixelUI(ui, ui.leftPane.global.getContentWidth(),
+            this.gpListener, this.gpBroadcaster);
+    gpui.addToContainer(ui.leftPane.global);
   }
 
   @Override
