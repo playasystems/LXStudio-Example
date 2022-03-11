@@ -2,6 +2,7 @@ package heronarts.lx.app;
 
 import heronarts.lx.LX;
 import heronarts.lx.LXLoopTask;
+import heronarts.p4lx.ui.component.UITextBox;
 import playasystems.gigglepixel.*;
 import heronarts.lx.color.LXColor;
 import heronarts.lx.color.LXSwatch;
@@ -9,33 +10,41 @@ import heronarts.lx.color.LXSwatch;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GigglePixelListener implements LXLoopTask {
   private final LX lx;
   private GPListener gp;
   private InetAddress listenAddr;
   private final int myID; // Set to >= 0, and packets with this ID will be ignored as from ourselves
-  public boolean enabled;
+  Set<String> peersSeen;
+  UITextBox peersTextbox;
+  public boolean peeking;
+  public boolean subscribing;
 
   public GigglePixelListener(LX lx, String listenIP, int myID) throws IOException {
     this.lx = lx;
     this.listenAddr = InetAddress.getByName(listenIP);
     this.myID = myID;
-    this.enabled = false;
+    this.peeking = false;
+    this.subscribing = false;
+    this.peersTextbox = null;
   }
 
   @Override
   public void loop(double deltaMs) {
-    if (!this.enabled) {
+    if (!this.peeking) {
       this.gp = null;
       return;
     }
 
     if (this.gp == null) try {
       this.gp = new GPListener(this.listenAddr);
+      this.peersSeen = new HashSet<>();
     } catch (SocketException e) {
       LX.log("Failed to create GigglePixel listener: " + e.getMessage());
-      this.enabled = false;
+      this.peeking = false;
       return;
     }
 
@@ -53,7 +62,21 @@ public class GigglePixelListener implements LXLoopTask {
 
     if (packet == null) return;
 
-    if (packet instanceof GPPalettePacket) {
+    if (packet.source == this.myID) {
+      LX.log("Ignoring GigglePixel packet from myself");
+      return;
+    }
+
+    if (this.peersTextbox != null && packet instanceof GPIdentificationPacket) {
+      GPIdentificationPacket idPacket = (GPIdentificationPacket) packet;
+      if (!this.peersSeen.contains(idPacket.name)) {
+        this.peersSeen.add(idPacket.name);
+        String peersStr = this.peersSeen.stream().collect(Collectors.joining(", "));
+        this.peersTextbox.setValue(peersStr);
+      }
+    }
+
+    if (this.subscribing && packet instanceof GPPalettePacket) {
       GPPalettePacket pp = (GPPalettePacket) packet;
       int numColors = pp.entries.size();
       if (numColors < 1) {

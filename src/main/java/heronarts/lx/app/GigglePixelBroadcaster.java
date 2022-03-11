@@ -3,7 +3,6 @@ package heronarts.lx.app;
 import heronarts.lx.LX;
 import heronarts.lx.LXLoopTask;
 import heronarts.lx.color.LXColor;
-import heronarts.lx.color.LXDynamicColor;
 import playasystems.gigglepixel.*;
 
 import java.io.IOException;
@@ -18,6 +17,7 @@ public class GigglePixelBroadcaster implements LXLoopTask {
   private final LX lx;
   private final GPBroadcaster gp;
   private final String name;
+  private List<Integer> colors;
   private double msecSinceLastBroadcast;
   public boolean enabled;
 
@@ -29,6 +29,14 @@ public class GigglePixelBroadcaster implements LXLoopTask {
     this.name = myName;
     this.msecSinceLastBroadcast = 0.0;
     this.enabled = false;
+  }
+
+  public void setColors(List<Integer> colors) {
+    this.colors = colors;
+  }
+
+  public void sendImmediately() {
+    this.msecSinceLastBroadcast = BROADCAST_PERIOD_MSEC;
   }
 
   @Override
@@ -47,11 +55,10 @@ public class GigglePixelBroadcaster implements LXLoopTask {
       return;
     }
 
-    int numColors = this.lx.engine.palette.swatch.colors.size();
+    int numColors = this.colors.size();
     if (numColors < 1) return;
     List<GPColor> entries = new ArrayList<>();
-    for (LXDynamicColor dColor : this.lx.engine.palette.swatch.colors) {
-      int color = dColor.getColor();
+    for (Integer color : this.colors) {
       int r = (256 + LXColor.red(color)) % 256;
       int g = (256 + LXColor.green(color)) % 256;
       int b = (256 + LXColor.blue(color)) % 256;

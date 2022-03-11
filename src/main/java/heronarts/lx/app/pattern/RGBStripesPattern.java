@@ -24,17 +24,36 @@ import heronarts.lx.color.LXColor;
 import heronarts.lx.model.LXPoint;
 import heronarts.lx.pattern.LXPattern;
 
-@LXCategory(LXCategory.TEST)
-public class AppPattern extends LXPattern {
+import java.util.*;
 
-  public AppPattern(LX lx) {
+@LXCategory("GigglePixel-Enabled")
+public class RGBStripesPattern extends LXPattern implements GigglePixelPattern {
+
+  public RGBStripesPattern(LX lx) {
     super(lx);
+  }
+
+  public List<LXPoint> getGigglePixelPoints() {
+    List<LXPoint> gigglePixelPoints = new ArrayList<>();
+    if(model.points.length >= 1) gigglePixelPoints.add(model.points[0]);
+    if(model.points.length >= 2) gigglePixelPoints.add(model.points[1]);
+    if(model.points.length >= 3) gigglePixelPoints.add(model.points[2]);
+    return gigglePixelPoints;
   }
 
   @Override
   protected void run(double deltaMs) {
-    for (LXPoint p : model.points) {
-      colors[p.index] = LXColor.hsb(240, 100, 100);
+    for (int i = 0 ; i < model.points.length; i++) {
+      LXPoint p = model.points[i];
+      int color;
+      if (i % 3 == 0) {
+        color = LXColor.rgb(255, 0, 0);
+      } else if (i % 3 == 1) {
+        color = LXColor.rgb(0, 255, 0);
+      } else {
+        color = LXColor.rgb(0, 0, 255);
+      }
+      colors[p.index] = color;
     }
   }
 

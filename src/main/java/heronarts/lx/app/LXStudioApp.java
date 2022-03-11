@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import heronarts.lx.LX;
 import heronarts.lx.LXPlugin;
+import heronarts.lx.app.pattern.RGBStripesPattern;
 import heronarts.lx.model.LXModel;
 import heronarts.lx.model.StripModel;
 import heronarts.lx.studio.LXStudio;
@@ -47,8 +48,9 @@ public class LXStudioApp extends PApplet implements LXPlugin {
 
   private static boolean HAS_WINDOW_POSITION = false;
 
-  GigglePixelListener gpListener;
-  GigglePixelBroadcaster gpBroadcaster;
+  private GigglePixelListener gpListener;
+  private GigglePixelBroadcaster gpBroadcaster;
+  private GigglePixelOutput gpOutput;
 
   @Override
   public void settings() {
@@ -85,7 +87,7 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     // available.
 
     // Register custom pattern and effect types
-    lx.registry.addPattern(heronarts.lx.app.pattern.AppPattern.class);
+    lx.registry.addPattern(RGBStripesPattern.class);
     lx.registry.addEffect(heronarts.lx.app.effect.AppEffect.class);
 
     String myGigglePixelName = "Aztec Spleen";
@@ -108,6 +110,9 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     } catch (IOException e) {
       LX.log("Failed to create GigglePixel broadcaster: " + e.getMessage());
     }
+
+    this.gpOutput = new GigglePixelOutput(lx, this.gpBroadcaster);
+    lx.addOutput(this.gpOutput);
   }
 
   public void initializeUI(LXStudio lx, LXStudio.UI ui) {
@@ -120,7 +125,7 @@ public class LXStudioApp extends PApplet implements LXPlugin {
     // At this point, the LX Studio application UI has been built. You may now add
     // additional views and components to the Ui hierarchy.
     GigglePixelUI gpui = new GigglePixelUI(ui, ui.leftPane.global.getContentWidth(),
-            this.gpListener, this.gpBroadcaster);
+            this.gpOutput, this.gpListener, this.gpBroadcaster);
     gpui.addToContainer(ui.leftPane.global);
   }
 
