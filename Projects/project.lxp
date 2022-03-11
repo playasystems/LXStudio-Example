@@ -1,6 +1,6 @@
 {
   "version": "0.4.0",
-  "timestamp": 1646761317634,
+  "timestamp": 1647020923835,
   "model": {
     "id": 2,
     "class": "heronarts.lx.structure.LXStructure",
@@ -70,8 +70,8 @@
                   "mode": 0,
                   "period": 30.0,
                   "primary/brightness": 100.0,
-                  "primary/saturation": 100.0,
-                  "primary/hue": 0.0,
+                  "primary/saturation": 99.16666412353516,
+                  "primary/hue": 297.0,
                   "secondary/brightness": 100.0,
                   "secondary/saturation": 100.0,
                   "secondary/hue": 120.0
@@ -79,7 +79,7 @@
                 "children": {}
               },
               {
-                "id": 31,
+                "id": 56,
                 "class": "heronarts.lx.color.LXDynamicColor",
                 "internal": {
                   "modulationColor": 0
@@ -351,7 +351,7 @@
                           "exp": 0.0
                         },
                         "children": {},
-                        "basis": 0.8359009514156893
+                        "basis": 0.4942417167524804
                       }
                     ],
                     "modulations": [
@@ -402,6 +402,37 @@
                         "children": {}
                       }
                     ],
+                    "triggers": []
+                  }
+                },
+                "deviceVersion": -1
+              },
+              {
+                "id": 81,
+                "class": "heronarts.lx.app.pattern.RGBStripesPattern",
+                "internal": {
+                  "modulationColor": 0,
+                  "expanded": true,
+                  "modulationExpanded": false,
+                  "autoCycleEligible": true
+                },
+                "parameters": {
+                  "label": "RGBStripes",
+                  "recall": false
+                },
+                "children": {
+                  "modulation": {
+                    "id": 82,
+                    "class": "heronarts.lx.modulation.LXModulationEngine",
+                    "internal": {
+                      "modulationColor": 0
+                    },
+                    "parameters": {
+                      "label": "Modulation"
+                    },
+                    "children": {},
+                    "modulators": [],
+                    "modulations": [],
                     "triggers": []
                   }
                 },
